@@ -189,7 +189,7 @@ a = UnsignedInt()
 a.set_from_hex_string("33ced2c76b26cae94e162c4c0d2c0ff7c13094b0185a3c122e732d5ba77efebc")
 b = UnsignedInt()
 b.set_from_hex_string("22e962951cb6cd2ce279ab0e2095825c141d48ef3ca9dabf253e38760b57fe03")
-c1 = UnsignedInt()
+c = UnsignedInt()
 c = a.SUB(b)
 
 print(c.get_hex_string())
