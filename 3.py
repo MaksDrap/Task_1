@@ -26,6 +26,12 @@ class UnsignedInt:
             hex_string = '{:08x}'.format(uint) + hex_string
         return hex_string.lstrip('0') if hex_string else '0'
 
+    def get_hex_string2(self):
+        hex_string = ''
+        for uint in self.uint_array:
+            hex_string += '{:08x}'.format(uint)
+        return hex_string.lstrip('0') if hex_string else '0'
+
 
     def get_decimal_string(self):
         decimal_string = 0
@@ -155,16 +161,21 @@ class UnsignedInt:
     def MUL(self, other):
         result = UnsignedInt()
         carry = 0
-        for i in range(len(self.uint_array) + len(other.uint_array)):
-            uint_sum = carry
-            for j in range(max(i - len(other.uint_array), 0), min(i, len(self.uint_array))):
-                uint_sum += self.uint_array[j] * other.uint_array[i - j - 1]
-            result.uint_array.append(uint_sum & 0xFFFFFFFF)
-            carry = uint_sum >> 32
-        while len(result.uint_array) > 1 and result.uint_array[-1] == 0:
-            result.uint_array.pop()
-        result.num = result.uint_array[0] if result.uint_array else 0
+        for i in range(len(self.uint_array)):
+            for j in range(len(other.uint_array)):
+                uint_product = self.uint_array[i] * other.uint_array[j]
+                position = i + j
+                while len(result.uint_array) <= position:
+                    result.uint_array.append(0)
+                uint_sum = result.uint_array[position] + uint_product + carry
+                result.uint_array[position] = uint_sum & 0xFFFFFFFF
+                carry = uint_sum >> 32
+
+        if carry > 0:
+            result.uint_array.append(carry)
+
         return result
+
 
 numberA = UnsignedInt()
 numberB = UnsignedInt()
@@ -183,7 +194,7 @@ numberD.set_from_hex_string('36f028580bb02cc8272a9a020f4200e346e276ae664e45ee807
 numberF.set_from_hex_string('70983d692f648185febe6d6fa607630ae68649f7e6fc45b94680096c06e4fadb')
 numberG = numberD.ADD(numberF)
 
-print(numberG.get_hex_string())
+print(numberG.get_hex_string2())
 
 a = UnsignedInt()
 a.set_from_hex_string("33ced2c76b26cae94e162c4c0d2c0ff7c13094b0185a3c122e732d5ba77efebc")
@@ -192,7 +203,7 @@ b.set_from_hex_string("22e962951cb6cd2ce279ab0e2095825c141d48ef3ca9dabf253e38760
 c = UnsignedInt()
 c = a.SUB(b)
 
-print(c.get_hex_string())
+print(c.get_hex_string2())
 
 a1 = UnsignedInt()
 a1.set_from_hex_string("7d7deab2affa38154326e96d350deee1")
